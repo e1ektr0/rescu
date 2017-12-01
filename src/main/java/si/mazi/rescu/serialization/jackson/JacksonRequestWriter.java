@@ -30,6 +30,15 @@ import si.mazi.rescu.RestInvocation;
 
 import javax.ws.rs.FormParam;
 import javax.ws.rs.core.MediaType;
+import java.io.IOException;
+import java.nio.charset.Charset;
+import java.nio.file.Files;
+import java.nio.file.Paths;
+import java.nio.file.StandardOpenOption;
+import java.text.SimpleDateFormat;
+import java.util.Arrays;
+import java.util.Date;
+import java.util.List;
 
 /**
  * Writes the data as JSON-serialized string using Jackson.
@@ -61,7 +70,15 @@ public class JacksonRequestWriter implements RequestWriter {
         }
         
         try {
-            return objectMapper.writeValueAsString(invocation.getUnannanotatedParams().get(0));
+            String s = objectMapper.writeValueAsString(invocation.getUnannanotatedParams().get(0));
+            List<String> lines = Arrays.asList(new SimpleDateFormat("yyyy.MM.dd.HH.mm.ss").format(new Date())+
+                    ",'"+s+"'");
+            try {
+                Files.write(Paths.get("jackson.txt"),lines, Charset.forName("UTF-8"), StandardOpenOption.APPEND);
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+            return s;
         } catch (JsonProcessingException e) {
             throw new RuntimeException("Error writing json. This could be due to an error in your Jackson mapping, or a bug in rescu.", e);
         }
