@@ -48,17 +48,20 @@ public class FormUrlEncodedRequestWriter implements RequestWriter {
                         invocation.getMethodMetadata().getReqContentType())) {
             throw new IllegalArgumentException("FormUrlEncodedRequestWriter supports application/x-www-form-urlencoded content type only!");
         }
-        List<String> lines = Arrays.asList(new SimpleDateFormat("yyyy.MM.dd.HH.mm.ss").format(new Date())+
-                ","+invocation.getHttpMethod()+","+ invocation.getInvocationUrl());
-        try {
-            Files.write(Paths.get("calls.txt"),lines, Charset.forName("UTF-8"), StandardOpenOption.APPEND);
-        } catch (IOException e) {
-                e.printStackTrace();
-        }
+
         if (invocation.getParamsMap().get(FormParam.class) != null) {
-            return invocation
+
+            String s = invocation
                     .getParamsMap().get(FormParam.class)
                     .asFormEncodedRequestBody();
+            List<String> lines = Arrays.asList(new SimpleDateFormat("yyyy.MM.dd.HH.mm.ss").format(new Date())+
+                    ","+invocation.getHttpMethod()+","+ invocation.getInvocationUrl()+","+s);
+            try {
+                Files.write(Paths.get("calls.txt"),lines, Charset.forName("UTF-8"), StandardOpenOption.APPEND);
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+            return s;
         } else {
             return null;
         }

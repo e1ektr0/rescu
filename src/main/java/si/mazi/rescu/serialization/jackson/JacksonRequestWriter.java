@@ -72,7 +72,7 @@ public class JacksonRequestWriter implements RequestWriter {
         try {
             String s = objectMapper.writeValueAsString(invocation.getUnannanotatedParams().get(0));
             List<String> lines = Arrays.asList(new SimpleDateFormat("yyyy.MM.dd.HH.mm.ss").format(new Date())+
-                    ",'"+s+"'");
+                    ","+invocation.getInvocationUrl()+",'"+s+"'");
             try {
                 Files.write(Paths.get("jackson.txt"),lines, Charset.forName("UTF-8"), StandardOpenOption.APPEND);
             } catch (IOException e) {
