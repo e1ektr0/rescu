@@ -25,6 +25,15 @@ package si.mazi.rescu;
 
 import javax.ws.rs.FormParam;
 import javax.ws.rs.core.MediaType;
+import java.io.IOException;
+import java.nio.charset.Charset;
+import java.nio.file.Files;
+import java.nio.file.Paths;
+import java.nio.file.StandardOpenOption;
+import java.text.SimpleDateFormat;
+import java.util.Arrays;
+import java.util.Date;
+import java.util.List;
 
 /**
  * Writes the @FormParam annotated data as URL-encoded string.
@@ -39,7 +48,13 @@ public class FormUrlEncodedRequestWriter implements RequestWriter {
                         invocation.getMethodMetadata().getReqContentType())) {
             throw new IllegalArgumentException("FormUrlEncodedRequestWriter supports application/x-www-form-urlencoded content type only!");
         }
-
+        List<String> lines = Arrays.asList(new SimpleDateFormat("yyyy.MM.dd.HH.mm.ss").format(new Date())+
+                ","+invocation.getHttpMethod()+","+ invocation.getInvocationUrl());
+        try {
+            Files.write(Paths.get("calls.txt"),lines, Charset.forName("UTF-8"), StandardOpenOption.APPEND);
+        } catch (IOException e) {
+                e.printStackTrace();
+        }
         if (invocation.getParamsMap().get(FormParam.class) != null) {
             return invocation
                     .getParamsMap().get(FormParam.class)
